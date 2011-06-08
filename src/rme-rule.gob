@@ -1,0 +1,77 @@
+requires 2.0.0
+
+%h{
+#include <stdint.h>
+
+%}
+
+enum RME_PROTO {
+    TCP,
+    UDP
+} Rme:Proto;
+
+class Rme:Rule from G:Object
+{
+    public Rme:Rule *new(const gchar *local_ip,
+            const uint32_t local_port,
+            const uint32_t external_port,
+            Rme:Proto proto,
+            const gchar *description)
+    {
+        RmeRule *obj = GET_NEW;
+        RmeRulePrivate *priv = obj->_priv;
+
+        priv->local_ip = g_strdup(local_ip);
+        priv->local_port = local_port;
+        priv->external_port = external_port;
+        priv->protocol = proto;
+        priv->description = g_strdup(description);
+        obj->_priv->signature = g_strdup_printf("*:%u->%s:%u %s",
+                external_port, local_ip, local_port,
+                (proto == RME_PROTO_TCP) ? "TCP" : "UDP");
+        return obj;
+    };
+
+    private gchar *signature = NULL destroywith g_free;
+    public const gchar *get_signature(self)
+    {
+        return selfp->signature;
+    }
+
+    private gchar *local_ip = NULL destroywith g_free;
+    public const gchar *get_local_ip(self)
+    {
+        return selfp->local_ip;
+    }
+
+    private uint32_t local_port = 0;
+    public uint32_t get_local_port(self)
+    {
+        return selfp->local_port;
+    }
+
+    private uint32_t external_port = 0;
+    public uint32_t get_external_port(self)
+    {
+        return selfp->external_port;
+    }
+
+    private gchar *description = NULL destroywith g_free;
+    public const gchar *get_description(self)
+    {
+        return selfp->description;
+    }
+
+    private RmeProto protocol = RME_PROTO_TCP;
+    public RmeProto get_protocol(self)
+    {
+        return selfp->protocol;
+    }
+}
+
+%h{
+
+typedef void (*RmeRuleCallback)(RmeRule *, gpointer);
+
+%}
+

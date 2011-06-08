@@ -1,0 +1,75 @@
+requires 2.0.0
+
+%h{
+#include <stdio.h>
+#include "rme-manager.h"
+
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void *yyscan_t;
+#endif
+
+%}
+
+class Rme:Config:Loader from G:Object
+{
+    public Rme:Config:Loader *new(Rme:Manager *manager)
+    {
+        RmeConfigLoader *obj = GET_NEW;
+        RmeConfigLoaderPrivate *priv = obj->_priv;
+
+        priv->manager = manager;
+        g_object_ref(manager);
+        priv->synerr = 0;
+
+        return obj;
+    }
+
+    public int load(self, const char *file)
+    {
+        FILE *fd;
+        int ret;
+
+        fd = fopen(file, "r");
+        if (fd == NULL)
+            return -1;
+
+        if (yylex_init_extra(self, &selfp->scaninfo))
+            return -1;
+
+        yyset_in(fd, selfp->scaninfo);
+
+        log_info("[parser]: parsing \"%s\"", file);
+
+        ret = yyparse(self);
+        if (ret != 0) {
+            log_warning("[parser]: failed to parse (ret:%i)", ret);
+            return -1;
+        }
+        else {
+            log_warning("[parser]: parsing done (synerr:%i)", selfp->synerr);
+            return selfp->synerr;
+        }
+    }
+
+    public int synerr(self)
+    {
+        return selfp->synerr;
+    }
+
+    private uint32_t line = 1;
+    public uint32_t get_line(self)
+    {
+        return selfp->line;
+    }
+    public void line_inc(self)
+    {
+        selfp->line++;
+    }
+
+
+    private Rme:Manager *manager unrefwith g_object_unref;
+    private yyscan_t scaninfo;
+    private int synerr;
+}
+

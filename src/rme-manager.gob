@@ -1,0 +1,88 @@
+requires 2.0.0
+
+%h{
+#include "rme-rule.h"
+#include "logger.h"
+%}
+
+class Rme:Manager from G:Object
+{
+    private G:Object *constructor(G:Type type,
+            guint n_construct_properties, G:ObjectConstructParam *construct_properties)
+    {
+        static GObject *self = NULL;
+
+        if (self == NULL)
+        {
+            self = G_OBJECT_CLASS(parent_class)->constructor(type, n_construct_properties, construct_properties);
+            g_object_add_weak_pointer(self, (gpointer) &self);
+            return self;
+        }
+
+        return g_object_ref(self);
+    }
+
+    class_init(class)
+    {
+        G_OBJECT_CLASS(class)->constructor = rme_manager_constructor;
+    }
+
+    public Rme:Manager *new(void)
+    {
+        return GET_NEW;
+    }
+
+    public void add_rule(self, Rme:Rule *rule)
+    {
+        g_object_ref(rule);
+        const char *sig = rme_rule_get_signature(rule);
+
+        g_mutex_lock(selfp->mutex);
+        g_hash_table_insert(selfp->rules, (gpointer) sig, rule);
+        log_notice("[manager]: rule added: %s", sig);
+        g_mutex_unlock(selfp->mutex);
+    }
+
+    public G:List *get_rules(self)
+    {
+        GList *list;
+
+        g_mutex_lock(selfp->mutex);
+        list = g_hash_table_get_values(selfp->rules);
+        g_list_foreach(list, (GFunc) g_object_ref, NULL);
+        g_mutex_unlock(selfp->mutex);
+
+        return list;
+    }
+
+    public Rme:Rule *get_rule(self, const gchar *signature)
+    {
+        RmeRule *rule;
+
+        g_mutex_lock(selfp->mutex);
+        rule = g_hash_table_lookup(selfp->rules, signature);
+        if (rule)
+            g_object_ref(rule);
+        g_mutex_unlock(selfp->mutex);
+
+        return rule;
+    }
+
+    public void foreach(self, RmeRuleCallback callback, gpointer data)
+    {
+        GHashTableIter iter;
+        const char *key;
+        RmeRule *rule;
+
+        g_mutex_lock(selfp->mutex);
+        g_hash_table_iter_init(&iter, selfp->rules);
+        while (g_hash_table_iter_next(&iter, (gpointer *) &key, (gpointer *) &rule))
+            callback(rule, data);
+        g_mutex_unlock(selfp->mutex);
+    }
+
+    private G:Mutex *mutex = { g_mutex_new(); } unrefwith g_mutex_free;
+    private G:HashTable *rules = { g_hash_table_new_full(g_str_hash, g_str_equal,
+            NULL, g_object_unref); } unrefwith g_hash_table_unref;
+}
+
