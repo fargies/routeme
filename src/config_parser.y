@@ -23,7 +23,7 @@
 
 #define YYLEX_PARAM pp->_priv->scaninfo
 
-#ifdef ROUTEME_YYDEBUG
+#ifdef YYDEBUG
 
 yydebug = 1;
 
@@ -66,18 +66,19 @@ config:
     rme_manager_add_rule(pp->_priv->manager, rr);
     g_object_unref(rr);
 }
-| config errors
+| config error ending
 {
     log_warning("[config]: Syntax error at line %i",
             rme_config_loader_get_line(pp));
+    rme_config_loader_line_inc(pp);
     pp->_priv->synerr++;
     yyerrok;
 }
 ;
 
-errors:
-| errors error
-;
+ending:
+  EOL
+| END
 
 routing_rule:
   ip_address port port proto
@@ -127,7 +128,7 @@ void yyerror(RmeConfigLoader *pp, const char *s)
 {
 }
 
-#ifdef ROUTEME_YYDEBUG
+#ifdef YYDEBUG
 static void print_token_value (FILE *file, int type, YYSTYPE value)
 {
     switch (type) {

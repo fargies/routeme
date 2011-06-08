@@ -27,6 +27,12 @@ if (TESTS)
     endif()
 endif()
 
+option(YYDEBUG "Flex/Bison parser debug" OFF)
+if (YYDEBUG)
+    set(FLEX_FLAGS -d)
+    set(BISON_FLAGS -t --report=all)
+endif()
+
 include(CheckFunctionExists)
 check_function_exists(getopt_long HAVE_GETOPT_LONG)
 

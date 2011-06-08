@@ -17,9 +17,11 @@ add_custom_command(OUTPUT rme-config-loader.h rme-config-loader.c
 ## Lex/Yacc commands ##
 #######################
 bison_target(config_parser config_parser.y
-    ${CMAKE_CURRENT_BINARY_DIR}/config_parser.c)
+    ${CMAKE_CURRENT_BINARY_DIR}/config_parser.c
+    COMPILE_FLAGS "${BISON_FLAGS}")
 flex_target(config_lexer config_lexer.l
-    ${CMAKE_CURRENT_BINARY_DIR}/config_lexer.c)
+    ${CMAKE_CURRENT_BINARY_DIR}/config_lexer.c
+    COMPILE_FLAGS "${FLEX_FLAGS}")
 add_flex_bison_dependency(config_lexer config_parser)
 
 ######################
