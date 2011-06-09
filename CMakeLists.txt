@@ -13,6 +13,13 @@ if (NOT GOB)
     message(FATAL_ERROR "GObjectBuilder is a required dependency")
 endif()
 
+pkg_check_modules(GUPNP REQUIRED "gupnp-1.0 >= 0.13.4")
+find_program(GUPNP_BINDING_TOOL gupnp-binding-tool)
+if (NOT GUPNP_BINDING_TOOL)
+    message(FATAL_ERROR "GUPnP is a required dependency (gupnp-binding-tool
+    missing)")
+endif()
+
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
