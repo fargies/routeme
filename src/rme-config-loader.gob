@@ -2,7 +2,7 @@ requires 2.0.0
 
 %h{
 #include <stdio.h>
-#include "rme-manager.h"
+#include "rme-rule-manager.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
@@ -13,7 +13,7 @@ typedef void *yyscan_t;
 
 class Rme:Config:Loader from G:Object
 {
-    public Rme:Config:Loader *new(Rme:Manager *manager)
+    public Rme:Config:Loader *new(Rme:Rule:Manager *manager)
     {
         RmeConfigLoader *obj = GET_NEW;
         RmeConfigLoaderPrivate *priv = obj->_priv;
@@ -68,7 +68,7 @@ class Rme:Config:Loader from G:Object
     }
 
 
-    private Rme:Manager *manager unrefwith g_object_unref;
+    private Rme:Rule:Manager *manager unrefwith g_object_unref;
     private yyscan_t scaninfo;
     private int synerr;
 }

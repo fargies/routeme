@@ -1,0 +1,43 @@
+
+requires 2.0.0
+
+%h{
+#include "rme-rule-manager.h"
+#include "logger.h"
+}
+
+class Rme:ControlPoint from G:Object
+{
+    private G:Object *constructor(G:Type type,
+            guint n_construct_properties, G:ObjectConstructParam *construct_properties)
+    {
+        static GObject *self = NULL;
+
+        if (self == NULL)
+        {
+            self = G_OBJECT_CLASS(parent_class)->constructor(type, n_construct_properties, construct_properties);
+            g_object_add_weak_pointer(self, (gpointer) &self);
+            return self;
+        }
+
+        return g_object_ref(self);
+    }
+
+    class_init(class)
+    {
+        G_OBJECT_CLASS(class)->constructor = rme_controlpoint_manager_constructor;
+    }
+
+    public Rme:ControlPoint:Manager *new(void)
+    {
+        return GET_NEW;
+    }
+
+    public void add_rule() {};
+    public void remove_rule() {};
+
+    private RmeRuleManager *rules = rme_rule_manager_new() unrefwith g_object_unref;
+    private GUPnPContext *context = NULL unrefwith g_object_unref;
+    private GUPnPControlPoint *cp_ppp = NULL unrefwith g_object_unref;
+    private GUPnPControlPoint *cp_ip = NULL unrefwith g_object_unref;
+}

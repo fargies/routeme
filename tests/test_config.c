@@ -31,11 +31,11 @@
 #include <sys/types.h>
 
 #include "cunit_helper.h"
-#include "rme-manager.h"
+#include "rme-rule-manager.h"
 #include "rme-config-loader.h"
 #include "logger.h"
 
-static RmeManager *manager;
+static RmeRuleManager *manager;
 #define TEST_FILE "/tmp/config_test.cfg"
 
 static int setUp()
@@ -43,7 +43,7 @@ static int setUp()
     g_type_init();
     log_init();
 
-    manager = rme_manager_new();
+    manager = rme_rule_manager_new();
     g_object_add_weak_pointer(G_OBJECT(manager), (gpointer *) &manager);
 
     return CUE_SUCCESS;
@@ -86,24 +86,24 @@ static void simple()
     CU_ASSERT_EQUAL(rme_config_loader_synerr(loader), 0);
     g_object_unref(loader);
 
-    rme_manager_foreach(manager, (RmeRuleCallback) rules_counter,
+    rme_rule_manager_foreach(manager, (RmeRuleCallback) rules_counter,
             (gpointer) &count);
     CU_ASSERT_EQUAL(count, 2);
 
     ref_rule = rme_rule_new("127.0.0.1", 80, 80, RME_PROTO_TCP, NULL);
 
-    mgr_rule = rme_manager_get_rule(manager, rme_rule_get_signature(ref_rule));
+    mgr_rule = rme_rule_manager_get(manager, rme_rule_get_signature(ref_rule));
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);
     g_object_unref(mgr_rule);
     g_object_unref(ref_rule);
 
     ref_rule =  rme_rule_new("127.0.0.2", 81, 81, RME_PROTO_UDP, NULL);
-    mgr_rule = rme_manager_get_rule(manager, rme_rule_get_signature(ref_rule));
+    mgr_rule = rme_rule_manager_get(manager, rme_rule_get_signature(ref_rule));
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);
     g_object_unref(mgr_rule);
     g_object_unref(ref_rule);
 
-/*    GList *list = rme_manager_get_rules(manager);
+/*    GList *list = rme_rule_manager_get_rules(manager);
     CU_ASSERT_EQUAL(g_list_length(list), 2);
     g_list_free_full(list, g_object_unref);
 */
@@ -116,7 +116,7 @@ static void empty()
 
     g_object_unref(manager);
     CU_ASSERT_PTR_NULL_FATAL(manager);
-    manager = rme_manager_new();
+    manager = rme_rule_manager_new();
     CU_ASSERT_PTR_NOT_NULL_FATAL(manager);
 
     RmeConfigLoader *loader = rme_config_loader_new(manager);
@@ -126,7 +126,7 @@ static void empty()
     CU_ASSERT_EQUAL(rme_config_loader_synerr(loader), 0);
     g_object_unref(loader);
 
-    rme_manager_foreach(manager, (RmeRuleCallback) rules_counter,
+    rme_rule_manager_foreach(manager, (RmeRuleCallback) rules_counter,
             (gpointer) &count);
     CU_ASSERT_EQUAL(count, 0);
 }
@@ -149,7 +149,7 @@ static void error()
     CU_ASSERT_EQUAL(rme_config_loader_synerr(loader), 1);
     g_object_unref(loader);
 
-    rme_manager_foreach(manager, (RmeRuleCallback) rules_counter,
+    rme_rule_manager_foreach(manager, (RmeRuleCallback) rules_counter,
             (gpointer) &count);
     CU_ASSERT_EQUAL(count, 0);
 }
@@ -177,19 +177,19 @@ static void error_recover()
     CU_ASSERT_EQUAL(rme_config_loader_synerr(loader), 5);
     g_object_unref(loader);
 
-    rme_manager_foreach(manager, (RmeRuleCallback) rules_counter,
+    rme_rule_manager_foreach(manager, (RmeRuleCallback) rules_counter,
             (gpointer) &count);
     CU_ASSERT_EQUAL(count, 2);
 
     ref_rule = rme_rule_new("127.0.0.1", 80, 80, RME_PROTO_TCP, NULL);
 
-    mgr_rule = rme_manager_get_rule(manager, rme_rule_get_signature(ref_rule));
+    mgr_rule = rme_rule_manager_get(manager, rme_rule_get_signature(ref_rule));
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);
     g_object_unref(mgr_rule);
     g_object_unref(ref_rule);
 
     ref_rule =  rme_rule_new("127.0.0.2", 81, 81, RME_PROTO_UDP, NULL);
-    mgr_rule = rme_manager_get_rule(manager, rme_rule_get_signature(ref_rule));
+    mgr_rule = rme_rule_manager_get(manager, rme_rule_get_signature(ref_rule));
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);
     g_object_unref(mgr_rule);
     g_object_unref(ref_rule);

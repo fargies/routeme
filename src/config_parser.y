@@ -63,7 +63,7 @@ config:
 | config routing_rule
 {
     RmeRule *rr = (RmeRule *) $<pval>2;
-    rme_manager_add_rule(pp->_priv->manager, rr);
+    rme_rule_manager_add(pp->_priv->manager, rr);
     g_object_unref(rr);
 }
 | config error ending

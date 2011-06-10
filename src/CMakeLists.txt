@@ -5,9 +5,9 @@ add_custom_command(OUTPUT rme-rule.h rme-rule.c rme-rule-private.h
     DEPENDS rme-rule.gob
     COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-rule.gob)
 
-add_custom_command(OUTPUT rme-manager.h rme-manager.c
-    DEPENDS rme-manager.gob
-    COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-manager.gob)
+add_custom_command(OUTPUT rme-rule-manager.h rme-rule-manager.c
+    DEPENDS rme-rule-manager.gob
+    COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-rule-manager.gob)
 
 add_custom_command(OUTPUT rme-config-loader.h rme-config-loader.c
     DEPENDS rme-config-loader.gob
@@ -38,7 +38,7 @@ add_custom_command(OUTPUT WANConnection_proxy.h
 ######################
 set(routeme_SRCS main.c
     rme-rule.h rme-rule.c rme-rule-private.h
-    rme-manager.c rme-manager.h
+    rme-rule-manager.c rme-rule-manager.h
     rme-config-loader.c rme-config-loader.h
     WANConnection_proxy.h
     ${BISON_config_parser_OUTPUTS}

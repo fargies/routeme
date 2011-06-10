@@ -5,7 +5,7 @@ requires 2.0.0
 #include "logger.h"
 %}
 
-class Rme:Manager from G:Object
+class Rme:Rule:Manager from G:Object
 {
     private G:Object *constructor(G:Type type,
             guint n_construct_properties, G:ObjectConstructParam *construct_properties)
@@ -24,15 +24,15 @@ class Rme:Manager from G:Object
 
     class_init(class)
     {
-        G_OBJECT_CLASS(class)->constructor = rme_manager_constructor;
+        G_OBJECT_CLASS(class)->constructor = rme_rule_manager_constructor;
     }
 
-    public Rme:Manager *new(void)
+    public Rme:Rule:Manager *new(void)
     {
         return GET_NEW;
     }
 
-    public void add_rule(self, Rme:Rule *rule)
+    public void add(self, Rme:Rule *rule)
     {
         g_object_ref(rule);
         const char *sig = rme_rule_get_signature(rule);
@@ -43,7 +43,7 @@ class Rme:Manager from G:Object
         g_mutex_unlock(selfp->mutex);
     }
 
-    public G:List *get_rules(self)
+    public G:List *list(self)
     {
         GList *list;
 
@@ -55,7 +55,7 @@ class Rme:Manager from G:Object
         return list;
     }
 
-    public Rme:Rule *get_rule(self, const gchar *signature)
+    public Rme:Rule *get(self, const gchar *signature)
     {
         RmeRule *rule;
 

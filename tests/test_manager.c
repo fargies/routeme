@@ -27,7 +27,7 @@
 #include <CUnit/CUnit.h>
 #include <glib.h>
 
-#include "rme-manager.h"
+#include "rme-rule-manager.h"
 #include "cunit_helper.h"
 
 static int setup() {
@@ -36,8 +36,8 @@ static int setup() {
 }
 
 static void test_singleton() {
-    RmeManager *mgr1 = rme_manager_new();
-    RmeManager *mgr2 = rme_manager_new();
+    RmeRuleManager *mgr1 = rme_rule_manager_new();
+    RmeRuleManager *mgr2 = rme_rule_manager_new();
 
     CU_ASSERT_PTR_NOT_NULL(mgr1);
     CU_ASSERT_PTR_EQUAL(mgr1, mgr2);
