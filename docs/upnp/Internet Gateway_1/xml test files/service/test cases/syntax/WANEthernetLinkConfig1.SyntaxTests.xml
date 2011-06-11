@@ -1,0 +1,13 @@
+<ServiceControlSyntaxTestCases>
+	<ServiceType>UPnP_IGD_WANEthernetLinkConfig</ServiceType>
+	<ServiceVersion>1</ServiceVersion>
+	<TestVersion>0.9</TestVersion>
+	<TestCaseList>
+		<TestCase>
+			<Id>1</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetEthernetLinkStatus</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+	</TestCaseList>
+</ServiceControlSyntaxTestCases>

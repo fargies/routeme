@@ -1,0 +1,73 @@
+<ServiceControlSyntaxTestCases>
+	<ServiceType>WANCommonInterfaceConfig</ServiceType>
+	<ServiceVersion>1</ServiceVersion>
+	<TestVersion>0.9</TestVersion>
+	<TestCaseList>
+		<TestCase>
+			<Id>1</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetEnabledForInternet</ActionName>
+			<InArgs>
+				<NewEnabledForInternet>1</NewEnabledForInternet>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>2</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetEnabledForInternet</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>3</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetCommonLinkProperties</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>4</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetWANAccessProvider</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>5</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetMaximumActiveConnections</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>6</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetTotalBytesSent</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>7</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetTotalBytesReceived</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>8</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetTotalPacketsSent</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+                <TestCase>
+			<Id>9</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetTotalPacketsReceived</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>10</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetActiveConnection</ActionName>
+			<InArgs>
+				<A_ActiveConnectionIndex>50</A_ActiveConnectionIndex>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+	</TestCaseList>
+</ServiceControlSyntaxTestCases>

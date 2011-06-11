@@ -1,0 +1,196 @@
+<ServiceControlSyntaxTestCases>
+	<ServiceType>WANPPPConnection</ServiceType>
+	<ServiceVersion>1</ServiceVersion>
+	<TestVersion>0.9</TestVersion>
+	<TestCaseList>
+		<TestCase>
+			<Id>1</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetConnectionType</ActionName>
+			<InArgs>
+				<NewConnectionType>IP_Routed</NewConnectionType>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>2</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetConnectionTypeInfo</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>3</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>ConfigureConnection</ActionName>
+			<InArgs>
+				<NewUserName>John Doe</NewUserName>
+				<NewPassword>LogOnNow</NewPassword>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>4</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>RequestConnection</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>5</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>RequestTermination</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>6</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>ForceTermination</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>7</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetAutoDisconnectTime</ActionName>
+			<InArgs>
+				<NewAutoDisconnectTime>1</NewAutoDisconnectTime>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>8</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetIdleDisconnectTime</ActionName>
+			<InArgs>
+				<NewIdleDisconnectTime>1</NewIdleDisconnectTime>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>9</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetWarnDisconnectDelay</ActionName>
+			<InArgs>
+				<NewWarnDisconnectDelay>1</NewWarnDisconnectDelay>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>10</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetStatusInfo</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>11</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetLinkLayerMaxBitRates</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>12</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetPPPEncryptionProtocol</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>13</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetPPPCompressionProtocol</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>14</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetPPPAuthenticationProtocol</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>15</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetUserName</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>16</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetPassword</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>17</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetIdleDisconnectTime</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>18</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetWarnDisconnectDelay</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>19</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetNATRSIPStatus</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>20</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetGenericPortMappingEntry</ActionName>
+			<InArgs>
+				<NewPortMappingIndex>1</NewPortMappingIndex>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>21</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetSpecificPortMappingEntry</ActionName>
+			<InArgs>
+				<NewRemoteHost>5.10.15.20</NewRemoteHost>
+				<NewExternalPort>100</NewExternalPort>
+				<NewProtocol>TCP</NewProtocol>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>22</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>AddPortMapping</ActionName>
+			<InArgs>
+				<NewRemoteHost>10.20.30.40</NewRemoteHost>
+				<NewExternalPort>200</NewExternalPort>
+				<NewProtocol>UDP</NewProtocol>
+				<NewInternalPort>3</NewInternalPort>
+				<NewInternalClient>15.30.35.40</NewInternalClient>
+				<NewEnabled>1</NewEnabled>
+				<NewPortMappingDescription>abcdefg</NewPortMappingDescription>
+				<NewLeaseDuration>5</NewLeaseDuration>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>23</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>DeletePortMapping</ActionName>
+			<InArgs>
+				<NewRemoteHost>25.35.45.55</NewRemoteHost>
+				<NewExternalPort>10</NewExternalPort>
+				<NewProtocol>TCP</NewProtocol>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>24</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetExternalIPAddress</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+                <TestCase>
+			<Id>25</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetAutoDisconnectTime</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+	</TestCaseList>
+</ServiceControlSyntaxTestCases>

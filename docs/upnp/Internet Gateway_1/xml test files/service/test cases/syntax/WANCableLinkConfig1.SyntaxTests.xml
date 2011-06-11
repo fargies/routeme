@@ -1,0 +1,67 @@
+<ServiceControlSyntaxTestCases>
+	<ServiceType>UPnP_IGD_WANCableLinkConfig1</ServiceType>
+	<ServiceVersion>1</ServiceVersion>
+	<TestVersion>0.9</TestVersion>
+	<TestCaseList>
+		<TestCase>
+			<Id>1</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetCableLinkConfigInfo</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>2</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDownstreamFrequency</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>3</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDownstreamModulation</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>4</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetUpstreamFrequency</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>5</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetUpstreamModulation</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>6</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetUpstreamChannelID</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>7</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetUpstreamPowerLevel</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>8</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetBPIEncryptionEnabled</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>9</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetConfigFile</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>10</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetTFTPServer</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+	</TestCaseList>
+</ServiceControlSyntaxTestCases>

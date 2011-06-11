@@ -1,0 +1,155 @@
+<ServiceControlSyntaxTestCases>
+	<ServiceType>UPnP_IGD_LanHostConfigManagement</ServiceType>
+	<ServiceVersion>1</ServiceVersion>
+	<TestVersion>0.9</TestVersion>
+	<TestCaseList>
+		<TestCase>
+			<Id>1</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetDHCPServerConfigurable</ActionName>
+			<InArgs>
+				<NewDHCPServerConfigurable>1</NewDHCPServerConfigurable>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>2</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDHCPServerConfigurable</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>3</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetDHCPRelay</ActionName>
+			<InArgs>
+				<NewDHCPRelay>0</NewDHCPRelay>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>4</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDHCPRelay</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>5</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetSubnetMask</ActionName>
+			<InArgs>
+				<NewSubnetMask>255.255.255.0</NewSubnetMask>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>6</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetSubnetMask</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>7</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetIPRouter</ActionName>
+			<InArgs>
+				<NewIPRouters>192.168.10.1, 11.22.33.44</NewIPRouters>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>8</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>DeleteIPRouter</ActionName>
+			<InArgs>
+				<NewIPRouters>11.22.33.44</NewIPRouters>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>9</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetIPRoutersList</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>10</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetDomainName</ActionName>
+			<InArgs>
+				<NewDomainName>upnp.org</NewDomainName>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>11</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDomainName</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>12</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetAddressRange</ActionName>
+			<InArgs>
+				<NewMinAddress>192.168.10.10</NewMinAddress>
+				<NewMaxAddress>192.168.10.50</NewMaxAddress>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>13</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetAddressRange</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>14</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetReservedAddress</ActionName>
+			<InArgs>
+				<NewReservedAddresses>192.168.10.70</NewReservedAddresses>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>15</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>DeleteReservedAddress</ActionName>
+			<InArgs>
+				<NewReservedAddresses>192.168.10.70</NewReservedAddresses>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>16</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetReservedAddresses</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>17</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetDNSServer</ActionName>
+			<InArgs>
+				<NewDNSServers>11.22.33.44</NewDNSServers>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>18</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>DeleteDNSServer</ActionName>
+			<InArgs>
+				<NewDNSServers>11.22.33.44</NewDNSServers>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>19</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDNSServers</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+	</TestCaseList>
+</ServiceControlSyntaxTestCases>

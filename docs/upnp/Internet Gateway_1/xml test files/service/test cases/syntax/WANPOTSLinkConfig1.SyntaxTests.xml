@@ -1,0 +1,70 @@
+<ServiceControlSyntaxTestCases>
+	<ServiceType>UPnP_IGD_WANPOTSLinkConfig</ServiceType>
+	<ServiceVersion>1</ServiceVersion>
+	<TestVersion>0.9</TestVersion>
+	<TestCaseList>
+		<TestCase>
+			<Id>1</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetISPInfo</ActionName>
+			<InArgs>
+				<NewISPPhoneNumber>msnconnect</NewISPPhoneNumber>
+				<NewISPInfo>yahoo</NewISPInfo>
+				<NewLinkType>PPP_Dialup</NewLinkType>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>2</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>SetCallRetryInfo</ActionName>
+			<InArgs>
+				<NewNumberOfRetries>5</NewNumberOfRetries>
+				<NewDelayBetweenRetries>10</NewDelayBetweenRetries>
+			</InArgs>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>3</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetISPInfo</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>4</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetCallRetryInfo</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>5</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetFClass</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>6</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDataModulationSupported</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>7</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDataProtocol</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>8</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetDataCompression</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+		<TestCase>
+			<Id>9</Id>
+			<Category>Valid Action And Valid InArgs</Category>
+			<ActionName>GetPlusVTRCommandSupported</ActionName>
+			<ExpectedReturnCode>ACTION_AND_INARGS_ARE_VALID</ExpectedReturnCode>
+		</TestCase>
+	</TestCaseList>
+</ServiceControlSyntaxTestCases>
