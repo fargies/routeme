@@ -2,9 +2,10 @@
 requires 2.0.0
 
 %h{
+#include <libgupnp/gupnp.h>
 #include "rme-rule-manager.h"
 #include "logger.h"
-}
+%}
 
 class Rme:ControlPoint from G:Object
 {
@@ -25,19 +26,20 @@ class Rme:ControlPoint from G:Object
 
     class_init(class)
     {
-        G_OBJECT_CLASS(class)->constructor = rme_controlpoint_manager_constructor;
+        G_OBJECT_CLASS(class)->constructor = rme_controlpoint_constructor;
     }
 
-    public Rme:ControlPoint:Manager *new(void)
+    public Rme:ControlPoint *new(void)
     {
         return GET_NEW;
     }
 
-    public void add_rule() {};
-    public void remove_rule() {};
+    private void add_rule(void) {}
+    private void remove_rule(void) {}
 
-    private RmeRuleManager *rules = rme_rule_manager_new() unrefwith g_object_unref;
+    private RmeRuleManager *rules = { rme_rule_manager_new(); } unrefwith g_object_unref;
     private GUPnPContext *context = NULL unrefwith g_object_unref;
     private GUPnPControlPoint *cp_ppp = NULL unrefwith g_object_unref;
     private GUPnPControlPoint *cp_ip = NULL unrefwith g_object_unref;
 }
+

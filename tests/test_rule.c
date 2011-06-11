@@ -33,6 +33,8 @@
 
 static int setup() {
     g_type_init();
+    log_init();
+
     return CUE_SUCCESS;
 }
 

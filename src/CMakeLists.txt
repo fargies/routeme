@@ -13,6 +13,10 @@ add_custom_command(OUTPUT rme-config-loader.h rme-config-loader.c
     DEPENDS rme-config-loader.gob
     COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-config-loader.gob)
 
+add_custom_command(OUTPUT rme-controlpoint.h rme-controlpoint.c
+    DEPENDS rme-controlpoint.gob
+    COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-controlpoint.gob)
+
 #######################
 ## Lex/Yacc commands ##
 #######################
@@ -36,10 +40,11 @@ add_custom_command(OUTPUT WANConnection_proxy.h
 ######################
 ## Internal library ##
 ######################
-set(routeme_SRCS main.c
+set(routeme_SRCS
     rme-rule.h rme-rule.c rme-rule-private.h
     rme-rule-manager.c rme-rule-manager.h
     rme-config-loader.c rme-config-loader.h
+    rme-controlpoint.h rme-controlpoint.c
     WANConnection_proxy.h
     ${BISON_config_parser_OUTPUTS}
     ${FLEX_config_lexer_OUTPUTS}
@@ -47,7 +52,8 @@ set(routeme_SRCS main.c
 add_library(rme STATIC ${routeme_SRCS})
 target_link_libraries(rme
     ${GOBJECT_LIBRARIES}
-    ${GLIB_LIBRARIES})
+    ${GLIB_LIBRARIES}
+    ${GUPNP_LIBRARIES})
 
 #####################
 ## Main executable ##
@@ -59,6 +65,7 @@ target_link_libraries(routeme
     ${GLIB_LIBRARIES})
 include_directories(
     ${GOBJECT_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS}
+    ${GUPNP_INCLUDE_DIRS}
     ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR})
 

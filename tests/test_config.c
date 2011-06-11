@@ -102,11 +102,6 @@ static void simple()
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);
     g_object_unref(mgr_rule);
     g_object_unref(ref_rule);
-
-/*    GList *list = rme_rule_manager_get_rules(manager);
-    CU_ASSERT_EQUAL(g_list_length(list), 2);
-    g_list_free_full(list, g_object_unref);
-*/
 }
 
 static void empty()

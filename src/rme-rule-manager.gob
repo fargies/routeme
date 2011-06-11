@@ -38,9 +38,37 @@ class Rme:Rule:Manager from G:Object
         const char *sig = rme_rule_get_signature(rule);
 
         g_mutex_lock(selfp->mutex);
-        g_hash_table_insert(selfp->rules, (gpointer) sig, rule);
+        g_hash_table_insert(selfp->rules, (gpointer) sig,
+                g_object_ref(rule));
         log_notice("[manager]: rule added: %s", sig);
         g_mutex_unlock(selfp->mutex);
+
+        rme_rule_manager_rule_added(self, rule);
+        g_object_unref(rule);
+    }
+
+    public gboolean remove(self, const gchar *signature)
+    {
+        gboolean ret;
+        RmeRule *rule;
+
+        g_mutex_lock(selfp->mutex);
+        rule = g_hash_table_lookup(selfp->rules, signature);
+        if (rule)
+            g_object_ref(rule);
+        ret = g_hash_table_remove(selfp->rules, signature);
+        g_mutex_unlock(selfp->mutex);
+
+        if (rule != NULL)
+        {
+            if (ret == TRUE)
+            {
+                log_notice("[manager]: rule removed: %s", signature);
+                rme_rule_manager_rule_removed(self, rule);
+            }
+            g_object_unref(rule);
+        }
+        return ret;
     }
 
     public G:List *list(self)
@@ -81,8 +109,29 @@ class Rme:Rule:Manager from G:Object
         g_mutex_unlock(selfp->mutex);
     }
 
-    private G:Mutex *mutex = { g_mutex_new(); } unrefwith g_mutex_free;
+    signal NONE (OBJECT) void rule_added(self, Rme:Rule *rule);
+    signal NONE (OBJECT) void rule_removed(self, Rme:Rule *rule);
+
+    dispose(self)
+    {
+        /* send signals to notify that rules are removed */
+        GList *iter, *list;
+        list = rme_rule_manager_list(self);
+
+        g_mutex_lock(selfp->mutex);
+        g_hash_table_remove_all(selfp->rules);
+        g_mutex_unlock(selfp->mutex);
+
+        for (iter = list; iter != NULL; iter = g_list_next(iter))
+        {
+            log_notice("[manager]: rule removed: %s",
+                    rme_rule_get_signature(RME_RULE(iter->data)));
+            rme_rule_manager_rule_removed(self, RME_RULE(iter->data));
+        }
+        g_list_free_full(list, g_object_unref);
+    }
     private G:HashTable *rules = { g_hash_table_new_full(g_str_hash, g_str_equal,
             NULL, g_object_unref); } unrefwith g_hash_table_unref;
+    private G:Mutex *mutex = { g_mutex_new(); } unrefwith g_mutex_free;
 }
 

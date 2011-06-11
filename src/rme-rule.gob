@@ -2,6 +2,7 @@ requires 2.0.0
 
 %h{
 #include <stdint.h>
+#include "logger.h"
 
 %}
 
@@ -26,11 +27,17 @@ class Rme:Rule from G:Object
         priv->external_port = external_port;
         priv->protocol = proto;
         priv->description = g_strdup(description);
-        obj->_priv->signature = g_strdup_printf("*:%u->%s:%u %s",
+        priv->signature = g_strdup_printf("*:%u->%s:%u %s",
                 external_port, local_ip, local_port,
                 (proto == RME_PROTO_TCP) ? "TCP" : "UDP");
+        log_debug("[rule]: new %s", priv->signature);
         return obj;
-    };
+    }
+
+    finalize(self)
+    {
+        log_debug("[rule]: finalize %s", selfp->signature);
+    }
 
     private gchar *signature = NULL destroywith g_free;
     public const gchar *get_signature(self)

@@ -32,6 +32,8 @@
 
 static int setup() {
     g_type_init();
+    log_init();
+
     return CUE_SUCCESS;
 }
 
@@ -45,7 +47,44 @@ static void test_singleton() {
     g_object_unref(mgr2);
 }
 
+static void sig_added(RmeRuleManager *mgr, RmeRule *rule, gpointer count)
+{
+    *((int *)count) += 1;
+}
+
+static void sig_removed(RmeRuleManager *mgr, RmeRule *rule, gpointer count)
+{
+    *((int *)count) -= 1;
+}
+
+static void test_signals() {
+    int count = 0;
+
+    RmeRuleManager *mgr = rme_rule_manager_new();
+    RmeRule *rule = rme_rule_new("127.0.0.1", 80, 80, RME_PROTO_TCP, NULL);
+
+    g_object_ref(rule);
+
+    rme_rule_manager_connect__rule_added(mgr, sig_added, (gpointer) &count);
+    rme_rule_manager_connect__rule_removed(mgr, sig_removed, (gpointer) &count);
+
+    rme_rule_manager_add(mgr, rule);
+    CU_ASSERT_EQUAL(count, 1);
+
+    CU_ASSERT(rme_rule_manager_remove(mgr, rme_rule_get_signature(rule)) == TRUE);
+    CU_ASSERT_EQUAL(count, 0);
+
+    rme_rule_manager_add(mgr, rule);
+    CU_ASSERT_EQUAL(count, 1);
+
+    g_object_unref(mgr);
+    CU_ASSERT_EQUAL(count, 0);
+
+    g_object_unref(rule);
+}
+
 SUITE_BEGIN(test_manager, setup, NULL)
     REGISTER_TEST(test_singleton)
+    REGISTER_TEST(test_signals)
 SUITE_END()
 
