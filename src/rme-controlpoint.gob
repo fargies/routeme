@@ -2,9 +2,17 @@
 requires 2.0.0
 
 %h{
+#include <glib.h>
 #include <libgupnp/gupnp.h>
 #include "rme-rule-manager.h"
+#include "rme-service.h"
+#include "rme-service-wan.h"
 #include "logger.h"
+%}
+
+%{
+#define SERVICE_TYPE_WAN_PPP "urn:schemas-upnp-org:service:WANPPPConnection:1"
+#define SERVICE_TYPE_WAN_IP  "urn:schemas-upnp-org:service:WANIPConnection:1"
 %}
 
 class Rme:ControlPoint from G:Object
@@ -31,7 +39,97 @@ class Rme:ControlPoint from G:Object
 
     public Rme:ControlPoint *new(void)
     {
-        return GET_NEW;
+        RmeControlPoint *obj = GET_NEW;
+        RmeControlPointPrivate *priv = obj->_priv;
+        GError *error = NULL;
+
+        priv->context = gupnp_context_new(NULL, NULL, 0, &error);
+        if (error) {
+            log_critical("[ControlPoint]: failed to create context");
+            g_object_unref(obj);
+            return NULL;
+        }
+
+        priv->cp_ppp = gupnp_control_point_new(priv->context,
+                SERVICE_TYPE_WAN_PPP);
+        g_signal_connect(priv->cp_ppp, "service-proxy-available",
+                G_CALLBACK(rme_controlpoint_service_available_cb), obj);
+        g_signal_connect(priv->cp_ppp, "service-proxy-unavailable",
+                G_CALLBACK(rme_controlpoint_service_unavailable_cb), obj);
+        gssdp_resource_browser_set_active(GSSDP_RESOURCE_BROWSER(priv->cp_ppp),
+                TRUE);
+
+        priv->cp_ip = gupnp_control_point_new(priv->context,
+                SERVICE_TYPE_WAN_IP);
+        g_signal_connect(priv->cp_ip, "service-proxy-available",
+                G_CALLBACK(rme_controlpoint_service_available_cb), obj);
+        g_signal_connect(priv->cp_ip, "service-proxy-unavailable",
+                G_CALLBACK(rme_controlpoint_service_unavailable_cb), obj);
+        gssdp_resource_browser_set_active(GSSDP_RESOURCE_BROWSER(priv->cp_ip),
+                TRUE);
+
+        return obj;
+    }
+
+
+    private gchar *service_proxy_get_id(GUPnPServiceProxy *proxy)
+    {
+        char *service_id = gupnp_service_info_get_id(GUPNP_SERVICE_INFO(proxy));
+        char *id;
+
+        if (service_id != NULL)
+        {
+            id = g_strconcat(gupnp_service_info_get_udn(GUPNP_SERVICE_INFO(proxy)),
+                    ":", service_id, NULL);
+            g_free(service_id);
+        }
+        else
+        {
+            id = g_strdup(gupnp_service_info_get_udn(GUPNP_SERVICE_INFO(proxy)));
+        }
+        return id;
+    }
+
+    private void service_available_cb(GUPnPControlPoint *control_point,
+            GUPnPServiceProxy *proxy,
+            gpointer user_data)
+    {
+        RmeControlPoint *obj = RME_CONTROLPOINT(user_data);
+        RmeControlPointPrivate *priv = obj->_priv;
+        RmeService *service;
+        gchar *id = rme_controlpoint_service_proxy_get_id(proxy);
+
+        log_info("[ControlPoint]: new service available \"%.20s...\"", id);
+        service = RME_SERVICE(rme_service_wan_new(proxy));
+
+        g_mutex_lock(priv->mutex);
+        g_hash_table_insert(priv->services, id, g_object_ref(service));
+        g_mutex_unlock(priv->mutex);
+
+        GList *iter, *rules = rme_rule_manager_list(priv->rules);
+        for (iter = rules; iter != NULL; iter = g_list_next(iter))
+            rme_service_add_rule(service, iter->data);
+
+        g_list_free_full(rules, g_object_unref);
+
+        g_object_unref(service);
+    }
+
+    private void service_unavailable_cb(GUPnPControlPoint *control_point,
+            GUPnPServiceProxy *proxy,
+            gpointer user_data)
+    {
+        RmeControlPoint *obj = RME_CONTROLPOINT(user_data);
+        RmeControlPointPrivate *priv = obj->_priv;
+        gchar *id = rme_controlpoint_service_proxy_get_id(proxy);
+
+        log_info("[ControlPoint]: service unavailable \"%.20s...\"", id);
+
+        g_mutex_lock(priv->mutex);
+        g_hash_table_remove(priv->services, id);
+        g_mutex_unlock(priv->mutex);
+
+        g_free(id);
     }
 
     private void add_rule(void) {}
@@ -41,5 +139,8 @@ class Rme:ControlPoint from G:Object
     private GUPnPContext *context = NULL unrefwith g_object_unref;
     private GUPnPControlPoint *cp_ppp = NULL unrefwith g_object_unref;
     private GUPnPControlPoint *cp_ip = NULL unrefwith g_object_unref;
+    private G:HashTable *services = { g_hash_table_new_full(g_str_hash,
+            g_str_equal, g_free, g_object_unref); } unrefwith g_hash_table_unref;
+    private G:Mutex *mutex = { g_mutex_new(); } unrefwith g_mutex_free;
 }
 

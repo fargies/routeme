@@ -1,0 +1,15 @@
+
+requires 2.0.0
+
+%h{
+#include "rme-rule.h"
+%}
+
+class Rme:Service from G:Object
+{
+    virtual public void add_rule(self, Rme:Rule *rule);
+    virtual public void remove_rule(self, Rme:Rule *rule);
+
+    virtual public void check(self);
+}
+

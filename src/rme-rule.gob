@@ -30,13 +30,13 @@ class Rme:Rule from G:Object
         priv->signature = g_strdup_printf("*:%u->%s:%u %s",
                 external_port, local_ip, local_port,
                 (proto == RME_PROTO_TCP) ? "TCP" : "UDP");
-        log_debug("[rule]: new %s", priv->signature);
+        log_debug("[Rule=%s]: created", priv->signature);
         return obj;
     }
 
     finalize(self)
     {
-        log_debug("[rule]: finalize %s", selfp->signature);
+        log_debug("[Rule=%s]: finalized", selfp->signature);
     }
 
     private gchar *signature = NULL destroywith g_free;

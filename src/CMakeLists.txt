@@ -17,6 +17,14 @@ add_custom_command(OUTPUT rme-controlpoint.h rme-controlpoint.c
     DEPENDS rme-controlpoint.gob
     COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-controlpoint.gob)
 
+add_custom_command(OUTPUT rme-service.h rme-service.c
+    DEPENDS rme-service.gob
+    COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-service.gob)
+
+add_custom_command(OUTPUT rme-service-wan.h rme-service-wan.c
+    DEPENDS rme-service-wan.gob
+    COMMAND ${GOB} ${CMAKE_CURRENT_SOURCE_DIR}/rme-service-wan.gob)
+
 #######################
 ## Lex/Yacc commands ##
 #######################
@@ -45,6 +53,8 @@ set(routeme_SRCS
     rme-rule-manager.c rme-rule-manager.h
     rme-config-loader.c rme-config-loader.h
     rme-controlpoint.h rme-controlpoint.c
+    rme-service.c rme-service.h
+    rme-service-wan.c rme-service-wan.h
     WANConnection_proxy.h
     ${BISON_config_parser_OUTPUTS}
     ${FLEX_config_lexer_OUTPUTS}

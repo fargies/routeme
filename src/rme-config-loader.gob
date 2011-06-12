@@ -39,15 +39,15 @@ class Rme:Config:Loader from G:Object
 
         yyset_in(fd, selfp->scaninfo);
 
-        log_info("[parser]: parsing \"%s\"", file);
+        log_info("[ConfigParser]: parsing \"%s\"", file);
 
         ret = yyparse(self);
         if (ret != 0) {
-            log_warning("[parser]: failed to parse (ret:%i)", ret);
+            log_warning("[ConfigParser]: failed to parse (ret:%i)", ret);
             return -1;
         }
         else {
-            log_warning("[parser]: parsing done (synerr:%i)", selfp->synerr);
+            log_warning("[ConfigParser]: parsing done (synerr:%i)", selfp->synerr);
             return selfp->synerr;
         }
     }

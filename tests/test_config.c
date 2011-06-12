@@ -90,7 +90,7 @@ static void simple()
             (gpointer) &count);
     CU_ASSERT_EQUAL(count, 2);
 
-    ref_rule = rme_rule_new("127.0.0.1", 80, 80, RME_PROTO_TCP, NULL);
+    ref_rule = rme_rule_new("", 80, 80, RME_PROTO_TCP, NULL);
 
     mgr_rule = rme_rule_manager_get(manager, rme_rule_get_signature(ref_rule));
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);
@@ -176,7 +176,7 @@ static void error_recover()
             (gpointer) &count);
     CU_ASSERT_EQUAL(count, 2);
 
-    ref_rule = rme_rule_new("127.0.0.1", 80, 80, RME_PROTO_TCP, NULL);
+    ref_rule = rme_rule_new("", 80, 80, RME_PROTO_TCP, NULL);
 
     mgr_rule = rme_rule_manager_get(manager, rme_rule_get_signature(ref_rule));
     CU_ASSERT_PTR_NOT_NULL(mgr_rule);

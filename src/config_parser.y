@@ -40,6 +40,7 @@ void yyerror(RmeConfigLoader *pp, const char *s);
 %token <ival> NUMBER  "number"
 %token <sval> IP_ADDRESS "IP address"
 %token <sval> TEXT "some text"
+%token LOCALHOST  "localhost"
 %token ANY_SYMBOL "ANY symbol"
 %token PROTO_TCP "TCP"
 %token PROTO_UDP "UDP"
@@ -68,7 +69,7 @@ config:
 }
 | config error ending
 {
-    log_warning("[config]: Syntax error at line %i",
+    log_warning("[Config]: Syntax error at line %i",
             rme_config_loader_get_line(pp));
     rme_config_loader_line_inc(pp);
     pp->_priv->synerr++;
@@ -120,6 +121,7 @@ port: NUMBER { $<ival>$ = $<ival>1; }
 ip_address:
   IP_ADDRESS { $<sval>$ = $<sval>1; }
 | ANY_SYMBOL { $<sval>$ = strdup(""); }
+| LOCALHOST  { $<sval>$ = strdup(""); }
 ;
 
 %%

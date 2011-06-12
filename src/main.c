@@ -24,13 +24,87 @@
 **
 */
 
-#include <stdio.h>
-#include "rme-rule.h"
+#include "config.h"
 
-int main() {
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <glib.h>
+#ifdef HAVE_GETOPT_LONG
+#include <getopt.h>
+#endif
+
+#include "logger.h"
+#include "rme-rule-manager.h"
+#include "rme-config-loader.h"
+#include "rme-controlpoint.h"
+
+static GMainLoop *main_loop = NULL;
+
+void sighdlr(int sig)
+{
+    log_notice("[Main]: signal caught (%s)",
+            g_strsignal(sig));
+    if (main_loop)
+        g_main_loop_quit(main_loop);
+}
+
+int main(int argc, char **argv)
+{
+#ifdef HAVE_GETOPT_LONG
+    int c;
+    struct option long_options[] = {
+        {"help", 0, 0, 'h'},
+        {"config", 1, 0, 'c'},
+        {0, 0, 0, 0}
+    };
+#endif
+    const char *config_file = CONFIG_FILE;
+
+    log_init();
     g_type_init();
-    RmeRule *rule = rme_rule_new("127.0.0.1", 1234, 1235, RME_PROTO_UDP, "test");
-    printf("%s\n", rme_rule_get_local_ip(rule));
+    if (g_thread_get_initialized() == FALSE)
+        g_thread_init(NULL);
+
+#ifdef HAVE_GETOPT_LONG
+    while ((c = getopt_long(argc, argv, "hc:", long_options, NULL)) != -1) {
+        switch (c) {
+            case 'h':
+                fprintf(stderr, "Usage: %s [test name]\n", argv[0]);
+                fputs("\nOptions:\n", stderr);
+                fputs("  -h, --help           Show this help message and exit\n", stderr);
+                fputs("  -c, --config         Set config file (default: " CONFIG_FILE ")\n", stderr);
+                exit(EXIT_SUCCESS);
+            case 'c':
+                config_file = optarg;
+        }
+    }
+#endif
+
+    RmeRuleManager *manager = rme_rule_manager_new();
+
+    RmeConfigLoader *loader = rme_config_loader_new(manager);
+
+    if (rme_config_loader_load(loader, config_file) != 0)
+    {
+        log_critical("[Main]: some errors in configuration file %s",
+                config_file);
+    }
+    g_object_unref(loader);
+
+    RmeControlPoint *cp = rme_controlpoint_new();
+
+    main_loop = g_main_loop_new(NULL, TRUE);
+
+    signal(SIGTERM, sighdlr);
+    signal(SIGINT, sighdlr);
+
+    g_main_loop_run(main_loop);
+
+    g_object_unref(cp);
+    g_object_unref(manager);
+
     return 0;
 }
 

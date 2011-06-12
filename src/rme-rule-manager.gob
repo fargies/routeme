@@ -40,7 +40,7 @@ class Rme:Rule:Manager from G:Object
         g_mutex_lock(selfp->mutex);
         g_hash_table_insert(selfp->rules, (gpointer) sig,
                 g_object_ref(rule));
-        log_notice("[manager]: rule added: %s", sig);
+        log_notice("[RuleManager][Rule=%s]: added", sig);
         g_mutex_unlock(selfp->mutex);
 
         rme_rule_manager_rule_added(self, rule);
@@ -63,7 +63,7 @@ class Rme:Rule:Manager from G:Object
         {
             if (ret == TRUE)
             {
-                log_notice("[manager]: rule removed: %s", signature);
+                log_notice("[RuleManager][Rule=%s]: removed", signature);
                 rme_rule_manager_rule_removed(self, rule);
             }
             g_object_unref(rule);
@@ -124,7 +124,7 @@ class Rme:Rule:Manager from G:Object
 
         for (iter = list; iter != NULL; iter = g_list_next(iter))
         {
-            log_notice("[manager]: rule removed: %s",
+            log_notice("[RuleManager][Rule=%s]: removed",
                     rme_rule_get_signature(RME_RULE(iter->data)));
             rme_rule_manager_rule_removed(self, RME_RULE(iter->data));
         }

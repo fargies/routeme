@@ -1,0 +1,182 @@
+
+requires 2.0.18
+
+%h{
+#include <glib.h>
+#include "rme-service.h"
+#include "rme-rule.h"
+#include "logger.h"
+#include "WANConnection_proxy.h"
+%}
+
+%{
+
+typedef struct {
+    RmeRule *rule;
+    RmeServiceWAN *service;
+} RmeServiceCBData;
+
+static RmeServiceCBData *rme_service_cb_data_new(RmeServiceWAN *service,
+        RmeRule *rule)
+{
+    RmeServiceCBData *ret = g_slice_alloc(sizeof (RmeServiceCBData));
+    ret->rule = g_object_ref(rule);
+    ret->service = g_object_ref(service);
+}
+
+static void rme_service_cb_data_destroy(RmeServiceCBData *cb)
+{
+    g_object_unref(cb->rule);
+    g_object_unref(cb->service);
+    g_slice_free1(sizeof (RmeServiceCBData), cb);
+}
+
+/**
+ * @brief error codes from WANPPPConnection v1
+ *
+ * @see UPnP-gw-WANPPPConnection-v1-Service-20011112.pdf
+ */
+typedef enum {
+    INVALID_ARGS = 402,
+    ACTION_FAILED = 501,
+    WILDCARD_NOT_PERMITTED_IN_SRC_IP = 715,
+    WILDCARD_NOT_PERMITTED_IN_EXT_PORT = 716,
+    CONFLICT_IN_MAPPING_ENTRY = 718,
+    SAME_PORT_VALUES_REQUIRED = 724,
+    ONLY_PERMANENT_LEASES_SUPPORTED = 725,
+    REMOTE_HOST_ONLY_SUPPORTS_WILDCARD = 726,
+    EXTERNAL_PORT_ONLY_SUPPORTS_WILDCARD = 727
+} WANErrors;
+
+%}
+
+class Rme:Service:WAN from Rme:Service
+{
+    public Rme:Service:WAN *new(G:UPnP:Service:Proxy *proxy)
+    {
+        RmeServiceWAN *obj = GET_NEW;
+        RmeServiceWANPrivate *priv = obj->_priv;
+
+        priv->proxy = g_object_ref(proxy);
+        return obj;
+    }
+
+    override (Rme:Service) void add_rule(Rme:Service *vself, Rme:Rule *rule)
+    {
+        RmeServiceWAN *self = RME_SERVICE_WAN(vself);
+
+        g_mutex_lock(selfp->mutex);
+        selfp->rules = g_list_prepend(selfp->rules,
+                (gpointer) g_object_ref(rule));
+        g_mutex_unlock(selfp->mutex);
+
+        rme_service_wan_add_port_mapping_async(self, rule);
+    }
+
+    override (Rme:Service) void remove_rule(self, Rme:Rule *rule)
+    {
+    }
+
+    override (Rme:Service) void check(self)
+    {
+    }
+
+    private const char *get_host_ip(self)
+    {
+        return gupnp_context_get_host_ip(
+                gupnp_service_info_get_context(
+                    GUPNP_SERVICE_INFO(selfp->proxy)));
+    }
+
+    private gboolean has_rule(self, Rme:Rule *rule)
+    {
+        gboolean ret;
+
+        g_mutex_lock(selfp->mutex);
+        ret = (g_list_find(selfp->rules, rule) != NULL);
+        g_mutex_unlock(selfp->mutex);
+
+        return ret;
+    }
+
+    private void add_port_mapping_async(self, Rme:Rule *rule)
+    {
+        const char *proto = (rme_rule_get_protocol(rule) == RME_PROTO_TCP) ?
+            "TCP" : "UDP";
+        const char *ip = rme_rule_get_local_ip(rule);
+
+        if (!ip || strlen(ip) == 0)
+            ip = rme_service_wan_get_host_ip(self);
+
+        add_port_mapping_async(selfp->proxy,
+                "", rme_rule_get_external_port(rule), proto,
+                rme_rule_get_local_port(rule), ip,
+                TRUE, rme_rule_get_description(rule), 0,
+                rme_service_wan_port_map_cb,
+                rme_service_cb_data_new(self, rule));
+    }
+
+    private void port_map_cb(G:UPnP:Service:Proxy *proxy,
+            G:Error *error,
+            gpointer userdata)
+    {
+        RmeServiceCBData *args = (RmeServiceCBData *) userdata;
+
+        if (error)
+        {
+            if (rme_service_wan_has_rule(args->service, args->rule) == FALSE)
+            {
+                log_warning("[WANService][Rule=%s]: removed",
+                        rme_rule_get_signature(args->rule));
+                rme_service_cb_data_destroy(args);
+            }
+            else if (error->code == ACTION_FAILED)
+            {
+                log_info("[WANService][Rule=%s]: action failed",
+                        rme_rule_get_signature(args->rule));
+                //FIXME: try again later
+                rme_service_cb_data_destroy(args);
+            }
+            else if (error->code == CONFLICT_IN_MAPPING_ENTRY)
+            {
+                log_info("[WANService][Rule=%s]: mapping conflict",
+                        rme_rule_get_signature(args->rule));
+
+                GError *del_error = NULL;
+                delete_port_mapping(proxy, "",
+                        rme_rule_get_external_port(args->rule),
+                        (rme_rule_get_protocol(args->rule) == RME_PROTO_TCP) ?
+                        "TCP" : "UDP", &del_error);
+
+                if (del_error)
+                {
+                    log_error("[WANService][Rule=%s]: failed to remove mapping (%s)",
+                            rme_rule_get_signature(args->rule), del_error->message);
+                    g_error_free(del_error);
+                    rme_service_cb_data_destroy(args);
+                }
+                else
+                    rme_service_wan_add_port_mapping_async(args->service, args->rule);
+            }
+            else
+            {
+                log_error("[WANService][Rule=%s]: failed to map port (%s)",
+                        rme_rule_get_signature(args->rule), error->message);
+                rme_service_cb_data_destroy(args);
+            }
+            g_error_free(error);
+        }
+        else
+        {
+            log_info("[WANService][Rule=%s]: port mapped",
+                    rme_rule_get_signature(args->rule));
+            rme_service_cb_data_destroy(args);
+        }
+    }
+
+    private G:UPnP:Service:Proxy *proxy = NULL unrefwith g_object_unref;
+    private G:List *rules = NULL
+        unref { g_list_free_full(VAR, g_object_unref); };
+    private G:Mutex *mutex = { g_mutex_new(); } unrefwith g_mutex_free;
+}
+
