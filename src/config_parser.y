@@ -69,7 +69,8 @@ config:
 }
 | config error ending
 {
-    log_warning("[Config]: Syntax error at line %i",
+    log_warning("[Config=%s]: syntax error at line %i",
+            rme_config_loader_get_file(pp),
             rme_config_loader_get_line(pp));
     rme_config_loader_line_inc(pp);
     pp->_priv->synerr++;

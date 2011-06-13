@@ -27,6 +27,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -44,7 +45,7 @@ static GMainLoop *main_loop = NULL;
 
 void sighdlr(int sig)
 {
-    log_notice("[Main]: signal caught (%s)",
+    log_notice("[MainLoop]: signal caught (%s)",
             g_strsignal(sig));
     if (main_loop)
         g_main_loop_quit(main_loop);
@@ -52,6 +53,7 @@ void sighdlr(int sig)
 
 int main(int argc, char **argv)
 {
+    int ret = 0;
 #ifdef HAVE_GETOPT_LONG
     int c;
     struct option long_options[] = {
@@ -83,17 +85,19 @@ int main(int argc, char **argv)
 #endif
 
     RmeRuleManager *manager = rme_rule_manager_new();
-
     RmeConfigLoader *loader = rme_config_loader_new(manager);
+    RmeControlPoint *cp = NULL;
 
-    if (rme_config_loader_load(loader, config_file) != 0)
-    {
-        log_critical("[Main]: some errors in configuration file %s",
-                config_file);
-    }
+    ret = rme_config_loader_load(loader, config_file);
     g_object_unref(loader);
 
-    RmeControlPoint *cp = rme_controlpoint_new();
+    if (ret < 0)
+    {
+        ret = -ret;
+        goto main_cleanup;
+    }
+
+    cp = rme_controlpoint_new();
 
     main_loop = g_main_loop_new(NULL, TRUE);
 
@@ -102,9 +106,12 @@ int main(int argc, char **argv)
 
     g_main_loop_run(main_loop);
 
-    g_object_unref(cp);
+main_cleanup:
+    if (cp)
+        g_object_unref(cp);
     g_object_unref(manager);
 
-    return 0;
+    log_info("[MainLoop]: exit(%i)", ret);
+    return ret;
 }
 
