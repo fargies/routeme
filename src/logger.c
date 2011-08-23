@@ -31,6 +31,7 @@
 int _log_init(const char *ident)
 {
     openlog(ident, LOG_PERROR | LOG_PID, LOG_DAEMON);
+    return 0;
 }
 
 void log_exit()
