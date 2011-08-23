@@ -1,0 +1,46 @@
+.\" Process this file with
+.\" groff -man -Tascii routeme.1
+.\"
+.TH routeme 1 "MAY 2010" Linux "User Manuals"
+.\"
+.SH NAME
+routeme \- UPnP-IGD client
+.\"
+.SH SYNOPSIS
+.\" exe prototype
+.B routeme [ -c 
+.I config-file
+.B ]
+.\"
+.SH DESCRIPTION
+routeme is an UPnP-IGD client designed for small servers.
+.\"
+.SH OPTIONS
+.IP "-c config-file"
+Use the alternate system wide
+.I config-file
+instead of
+.IR /etc/routeme.conf .
+.\"
+.SH FILES
+.I /etc/routeme.conf
+.RS
+The system wide configuration file. See
+.BR routeme.conf (5)
+for further details.
+.\"
+.SH AUTHOR
+Fargier Sylvain <fargier.sylvain@free.fr>
+.\"
+.SH "REPORTING BUGS"
+E-mail bug reports to the project's Author. Be sure to include
+.I routeme
+in the "Subject:" field.
+.\"
+.SH COPYRIGHT
+Copyright (C) 2010 Fargier Sylvain <fargier.sylvain@free.fr>
+
+This software is provided 'as-is'.
+.\"
+.SH "SEE ALSO"
+.BR routeme.conf (5)

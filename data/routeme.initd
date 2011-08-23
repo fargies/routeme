@@ -1,0 +1,35 @@
+#!/sbin/runscript
+# Copyright 2010-2011 Fargier Sylvain
+# Distributed under the terms of the GNU General Public License v2
+
+depend() {
+	need net
+	use logger
+}
+
+checkconfig() {
+	if [ ! -f /etc/routeme.conf ] ; then
+		eerror "Please create /etc/routeme.conf"
+		eerror "Sample conf: /usr/share/routeme/routeme.conf"
+		return 1
+	fi
+	return 0
+}
+
+start() {
+	checkconfig || return $?
+
+	ebegin "Starting routeme"
+	start-stop-daemon --start --exec /usr/sbin/routeme \
+	    --pidfile /var/run/routeme.pid --background --make-pidfile \
+	    -- ${ROUTEME_OPTS}
+	eend $? "Failed to start routeme"
+}
+
+stop() {
+	ebegin "Stopping routeme"
+	start-stop-daemon --stop \
+		--pidfile /var/run/routeme.pid \
+		--exec /usr/sbin/routeme
+	eend $? "Failed to stop routeme"
+}

@@ -1,0 +1,64 @@
+.\" Process this file with
+.\" groff -man -Tascii routeme.1
+.\"
+.TH routeme.conf 5 "MAY 2010" Linux "User Manuals"
+.\"
+.SH NAME
+routeme.conf \- configuration file for the routeme daemon.
+.\"
+.SH DESCRIPTION
+.IR routeme.conf
+is a simple file containing routing rules to be read by
+.B routeme (1) .
+.P
+The routing rule syntax is as follows: IP LOCAL_PORT <EXTERNAL_PORT> PROTO <COMMENT>
+.RS
+.IP \(bu 2
+.B IP
+is an ipv4 or ipv6 address, the server's local address might be represented by '-' or '*'.
+.IP \(bu 2
+.B LOCAL_PORT
+is the source port of the routing rule.
+.IP \(bu 2
+.B EXTERNAL_PORT
+is the destination port of the routing rule. 
+This parameter is optional, and defaults to 
+.IR LOCAL_PORT .
+.IP \(bu 2
+.B PROTO
+is the rule's protocol. Only TCP or UDP values are accepted as protocol.
+.IP \(bu 2
+.B COMMENT
+is the rule's description, it's contents must be double quoted. This parameter is optional.
+.RE
+
+Lines starting with a '#' are assumed to be comments.
+.\"
+.SH EXAMPLES
+.nf
+
+# Redirect external port 80 to our local port 80
+- 80 TCP
+
+# Redirect external port 3131 to ssh port 
+- 22 3131 TCP "hidden ssh"
+
+# Redirect external port 3132 to 192.168.3.10 port 22
+192.168.3.10 22 3132 TCP
+.fi
+.\"
+.SH AUTHOR
+Fargier Sylvain <fargier.sylvain@free.fr>
+.\"
+.SH "REPORTING BUGS"
+E-mail bug reports to the project's Author. Be sure to include
+.I routeme
+in the "Subject:" field.
+.\"
+.SH COPYRIGHT
+Copyright (C) 2010 Fargier Sylvain <fargier.sylvain@free.fr>
+
+This software is provided 'as-is'.
+.\"
+.SH "SEE ALSO"
+.BR routeme (1)
