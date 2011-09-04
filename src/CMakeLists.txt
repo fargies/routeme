@@ -80,5 +80,5 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(TARGETS routeme
-    RUNTIME DESTINATION bin)
+    RUNTIME DESTINATION sbin)
 
