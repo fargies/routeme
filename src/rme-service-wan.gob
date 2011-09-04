@@ -22,6 +22,7 @@ static RmeServiceCBData *rme_service_cb_data_new(RmeServiceWAN *service,
     RmeServiceCBData *ret = g_slice_alloc(sizeof (RmeServiceCBData));
     ret->rule = g_object_ref(rule);
     ret->service = g_object_ref(service);
+    return ret;
 }
 
 static void rme_service_cb_data_destroy(RmeServiceCBData *cb)
@@ -128,14 +129,12 @@ class Rme:Service:WAN from Rme:Service
             {
                 log_warning("[WANService][Rule=%s]: removed",
                         rme_rule_get_signature(args->rule));
-                rme_service_cb_data_destroy(args);
             }
             else if (error->code == ACTION_FAILED)
             {
                 log_info("[WANService][Rule=%s]: action failed",
                         rme_rule_get_signature(args->rule));
                 //FIXME: try again later
-                rme_service_cb_data_destroy(args);
             }
             else if (error->code == CONFLICT_IN_MAPPING_ENTRY)
             {
@@ -153,7 +152,6 @@ class Rme:Service:WAN from Rme:Service
                     log_error("[WANService][Rule=%s]: failed to remove mapping (%s)",
                             rme_rule_get_signature(args->rule), del_error->message);
                     g_error_free(del_error);
-                    rme_service_cb_data_destroy(args);
                 }
                 else
                     rme_service_wan_add_port_mapping_async(args->service, args->rule);
@@ -162,7 +160,6 @@ class Rme:Service:WAN from Rme:Service
             {
                 log_error("[WANService][Rule=%s]: failed to map port (%s)",
                         rme_rule_get_signature(args->rule), error->message);
-                rme_service_cb_data_destroy(args);
             }
             g_error_free(error);
         }
@@ -170,8 +167,8 @@ class Rme:Service:WAN from Rme:Service
         {
             log_info("[WANService][Rule=%s]: port mapped",
                     rme_rule_get_signature(args->rule));
-            rme_service_cb_data_destroy(args);
-        }
+	}
+	rme_service_cb_data_destroy(args);
     }
 
     private G:UPnP:Service:Proxy *proxy = NULL unrefwith g_object_unref;
