@@ -167,8 +167,8 @@ class Rme:Service:WAN from Rme:Service
         {
             log_info("[WANService][Rule=%s]: port mapped",
                     rme_rule_get_signature(args->rule));
-	}
-	rme_service_cb_data_destroy(args);
+        }
+        rme_service_cb_data_destroy(args);
     }
 
     private G:UPnP:Service:Proxy *proxy = NULL unrefwith g_object_unref;
