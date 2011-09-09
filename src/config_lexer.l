@@ -25,7 +25,7 @@ LOCALHOST (127\.0\.0\.1|localhost)
 {NUMBER}    { yyival = atoi(yytext); return NUMBER; }
 {LOCALHOST} { return LOCALHOST; }
 {IP}        { yysval = strdup(yytext); return IP_ADDRESS; }
-\".*\"      { yysval = strdup(yytext); return TEXT; }
+\".*\"      { yysval = strndup(yytext + 1, strlen(yytext) - 2); return TEXT; }
 -|\*        { return ANY_SYMBOL; }
 TCP         { return PROTO_TCP; }
 UDP         { return PROTO_UDP; }
