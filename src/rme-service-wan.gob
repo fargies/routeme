@@ -32,6 +32,8 @@ static void rme_service_cb_data_destroy(RmeServiceCBData *cb)
     g_slice_free1(sizeof (RmeServiceCBData), cb);
 }
 
+#define CHECK_INTERVAL (10 * 60 * 1000)
+
 /**
  * @brief error codes from WANPPPConnection v1
  *
@@ -49,6 +51,11 @@ typedef enum {
     EXTERNAL_PORT_ONLY_SUPPORTS_WILDCARD = 727
 } WANErrors;
 
+
+void rme_service_wan_num_entries_changed(GUPnPServiceProxy *proxy,
+        guint port_mapping_number_of_entries,
+        gpointer userdata);
+
 %}
 
 class Rme:Service:WAN from Rme:Service
@@ -59,6 +66,14 @@ class Rme:Service:WAN from Rme:Service
         RmeServiceWANPrivate *priv = obj->_priv;
 
         priv->proxy = g_object_ref(proxy);
+
+        gupnp_service_proxy_set_subscribed(proxy, TRUE);
+        port_mapping_number_of_entries_add_notify(proxy,
+                rme_service_wan_num_entries_changed, NULL);
+
+
+        obj->_priv->timeout_id = g_timeout_add(CHECK_INTERVAL,
+                (GSourceFunc) rme_service_wan_check_timer_cb, obj);
         return obj;
     }
 
@@ -69,17 +84,41 @@ class Rme:Service:WAN from Rme:Service
         g_mutex_lock(selfp->mutex);
         selfp->rules = g_list_prepend(selfp->rules,
                 (gpointer) g_object_ref(rule));
-        g_mutex_unlock(selfp->mutex);
 
-        rme_service_wan_add_port_mapping_async(self, rule);
+
+        rme_service_wan_map(self, rule);
+        g_mutex_unlock(selfp->mutex);
     }
 
     override (Rme:Service) void remove_rule(self, Rme:Rule *rule)
     {
     }
 
-    override (Rme:Service) void check(self)
+    override (Rme:Service) void check(Rme:Service *vself)
     {
+        RmeServiceWAN *self = RME_SERVICE_WAN(vself);
+
+        g_mutex_lock(selfp->mutex);
+        GList *iter;
+        for (iter = selfp->rules; iter != NULL; iter = g_list_next(iter))
+        {
+            const char *proto = (rme_rule_get_protocol(iter->data) ==
+                    RME_PROTO_TCP) ? "TCP" : "UDP";
+            RmeServiceCBData *cb_data = rme_service_cb_data_new(self,
+                    iter->data);
+
+            get_specific_port_mapping_entry_async(selfp->proxy, "",
+                    rme_rule_get_external_port(iter->data), proto,
+                    rme_service_wan_check_rule_cb, cb_data);
+        }
+        g_mutex_unlock(selfp->mutex);
+    }
+
+    public void num_entries_changed(GUPnPServiceProxy *proxy,
+            guint num_of_entries,
+            gpointer userdata)
+    {
+        log_error("Number of entries changed: %i", num_of_entries);
     }
 
     private const char *get_host_ip(self)
@@ -93,14 +132,12 @@ class Rme:Service:WAN from Rme:Service
     {
         gboolean ret;
 
-        g_mutex_lock(selfp->mutex);
         ret = (g_list_find(selfp->rules, rule) != NULL);
-        g_mutex_unlock(selfp->mutex);
 
         return ret;
     }
 
-    private void add_port_mapping_async(self, Rme:Rule *rule)
+    private void map(self, Rme:Rule *rule)
     {
         const char *proto = (rme_rule_get_protocol(rule) == RME_PROTO_TCP) ?
             "TCP" : "UDP";
@@ -113,19 +150,34 @@ class Rme:Service:WAN from Rme:Service
                 "", rme_rule_get_external_port(rule), proto,
                 rme_rule_get_local_port(rule), ip,
                 TRUE, rme_rule_get_description(rule), 0,
-                rme_service_wan_port_map_cb,
+                rme_service_wan_map_cb,
                 rme_service_cb_data_new(self, rule));
     }
 
-    private void port_map_cb(G:UPnP:Service:Proxy *proxy,
+    private void unmap(self, Rme:Rule *rule)
+    {
+        const char *proto = (rme_rule_get_protocol(rule) == RME_PROTO_TCP) ?
+            "TCP" : "UDP";
+
+        delete_port_mapping_async(selfp->proxy,
+                "", rme_rule_get_external_port(rule), proto,
+                rme_service_wan_unmap_cb,
+                rme_service_cb_data_new(self, rule));
+    }
+
+    private void map_cb(G:UPnP:Service:Proxy *proxy,
             G:Error *error,
             gpointer userdata)
     {
+        gboolean has_rule;
         RmeServiceCBData *args = (RmeServiceCBData *) userdata;
+
+        g_mutex_lock(args->service->_priv->mutex);
+        has_rule = rme_service_wan_has_rule(args->service, args->rule);
 
         if (error)
         {
-            if (rme_service_wan_has_rule(args->service, args->rule) == FALSE)
+            if (has_rule == FALSE)
             {
                 log_warning("[WANService][Rule=%s]: removed",
                         rme_rule_get_signature(args->rule));
@@ -141,39 +193,109 @@ class Rme:Service:WAN from Rme:Service
                 log_info("[WANService][Rule=%s]: mapping conflict",
                         rme_rule_get_signature(args->rule));
 
-                GError *del_error = NULL;
-                delete_port_mapping(proxy, "",
-                        rme_rule_get_external_port(args->rule),
-                        (rme_rule_get_protocol(args->rule) == RME_PROTO_TCP) ?
-                        "TCP" : "UDP", &del_error);
-
-                if (del_error)
-                {
-                    log_error("[WANService][Rule=%s]: failed to remove mapping (%s)",
-                            rme_rule_get_signature(args->rule), del_error->message);
-                    g_error_free(del_error);
-                }
-                else
-                    rme_service_wan_add_port_mapping_async(args->service, args->rule);
+                rme_service_wan_unmap(args->service, args->rule);
             }
             else
             {
-                log_error("[WANService][Rule=%s]: failed to map port (%s)",
-                        rme_rule_get_signature(args->rule), error->message);
+                log_error("[WANService][Rule=%s]: failed to map port: %s (%i)",
+                        rme_rule_get_signature(args->rule), error->message,
+                        error->code);
             }
             g_error_free(error);
+        }
+        else if (!has_rule)
+        {
+            rme_service_wan_unmap(args->service, args->rule);
         }
         else
         {
             log_info("[WANService][Rule=%s]: port mapped",
                     rme_rule_get_signature(args->rule));
         }
+        g_mutex_unlock(args->service->_priv->mutex);
         rme_service_cb_data_destroy(args);
+    }
+
+    private void unmap_cb(G:UPnP:Service:Proxy *proxy,
+            G:Error *error,
+            gpointer userdata)
+    {
+        gboolean has_rule;
+        RmeServiceCBData *args = (RmeServiceCBData *) userdata;
+
+        g_mutex_lock(args->service->_priv->mutex);
+        if (error)
+        {
+            log_warning("[WANService][Rule=%s]: failed to unmap: %s (%i)",
+                    rme_rule_get_signature(args->rule), error->message,
+                    error->code);
+            g_error_free(error);
+        }
+        else if (rme_service_wan_has_rule(args->service, args->rule) == TRUE)
+        {
+            rme_service_wan_map(args->service, args->rule);
+        }
+        else
+        {
+            log_info("[WANService][Rule=%s]: port unmapped",
+                    rme_rule_get_signature(args->rule));
+        }
+        g_mutex_unlock(args->service->_priv->mutex);
+        rme_service_cb_data_destroy(args);
+    }
+
+    private void check_rule_cb(G:UPnP:Service:Proxy *proxy,
+            guint int_port, const char *int_client,
+            const gboolean enabled,
+            const gchar *desc,
+            const guint lease,
+            G:Error *error,
+            gpointer userdata)
+    {
+        RmeServiceCBData *args = (RmeServiceCBData *) userdata;
+
+        g_mutex_lock(args->service->_priv->mutex);
+        if (error)
+        {
+            log_warning("[WANService][Rule=%s]: failed to check rule: %s (%i)",
+                    rme_rule_get_signature(args->rule), error->message,
+                    error->code);
+            rme_service_wan_map(args->service, args->rule);
+            g_error_free(error);
+        }
+        else if (rme_service_wan_has_rule(args->service, args->rule) == TRUE)
+        {
+            const char *local_ip = rme_rule_get_local_ip(args->rule);
+            guint local_port = rme_rule_get_local_port(args->rule);
+
+            if (!local_ip || strlen(local_ip) == 0)
+                local_ip = rme_service_wan_get_host_ip(args->service);
+
+            if (enabled == FALSE ||
+                    int_port != local_port ||
+                    strcmp(int_client, local_ip) != 0)
+            {
+                log_info("[WANService][Rule=%s]: mapping check failed (%s:%i "
+                        "enabled=%s)", rme_rule_get_signature(args->rule),
+                        int_client, int_port, (enabled == TRUE) ? "TRUE" :
+                        "FALSE");
+                rme_service_wan_map(args->service, args->rule);
+            }
+        }
+        g_mutex_unlock(args->service->_priv->mutex);
+        rme_service_cb_data_destroy(args);
+    }
+
+    private gboolean check_timer_cb(Rme:Service *srv)
+    {
+        rme_service_check(srv);
+        return TRUE;
     }
 
     private G:UPnP:Service:Proxy *proxy = NULL unrefwith g_object_unref;
     private G:List *rules = NULL
         unref { g_list_free_full(VAR, g_object_unref); };
     private G:Mutex *mutex = { g_mutex_new(); } unrefwith g_mutex_free;
+    private guint timeout_id unref { g_source_remove(timeout_id); };
 }
 

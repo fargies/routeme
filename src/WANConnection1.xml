@@ -17,7 +17,7 @@
       <sendEventsAttribute>no</sendEventsAttribute>
       <dataType>boolean</dataType>
     </stateVariable>
-        
+
     <stateVariable>
       <name>ExternalIPAddress</name>
       <dataType>string</dataType>
@@ -173,7 +173,7 @@
         </argument>
         <argument>
           <name>NewLeaseDuration</name>
-          <direction>in</direction>      
+          <direction>in</direction>
           <relatedStateVariable>PortMappingLeaseDuration</relatedStateVariable>
         </argument>
       </argumentList>
@@ -196,8 +196,54 @@
           <name>NewProtocol</name>
           <direction>in</direction>
         <relatedStateVariable>PortMappingProtocol</relatedStateVariable>
-        </argument> 
+        </argument>
      </argumentList>
+    </action>
+
+    <action>
+    <name>GetSpecificPortMappingEntry</name>
+      <argumentList>
+        <argument>
+          <name>NewRemoteHost</name>
+          <direction>in</direction>
+          <relatedStateVariable>RemoteHost</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewExternalPort</name>
+          <direction>in</direction>
+          <relatedStateVariable>ExternalPort</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewProtocol</name>
+          <direction>in</direction>
+        <relatedStateVariable>PortMappingProtocol</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewInternalPort</name>
+          <direction>out</direction>
+          <relatedStateVariable>InternalPort</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewInternalClient</name>
+          <direction>out</direction>
+          <relatedStateVariable>InternalClient</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewEnabled</name>
+          <direction>out</direction>
+         <relatedStateVariable>PortMappingEnabled</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewPortMappingDescription</name>
+          <direction>out</direction>      
+          <relatedStateVariable>PortMappingDescription</relatedStateVariable>
+        </argument>
+        <argument>
+          <name>NewLeaseDuration</name>
+          <direction>out</direction>        
+          <relatedStateVariable>PortMappingLeaseDuration</relatedStateVariable>
+        </argument>
+      </argumentList>
     </action>
 
   </actionList>
