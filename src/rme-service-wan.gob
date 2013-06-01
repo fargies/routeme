@@ -67,11 +67,6 @@ class Rme:Service:WAN from Rme:Service
 
         priv->proxy = g_object_ref(proxy);
 
-        gupnp_service_proxy_set_subscribed(proxy, TRUE);
-        port_mapping_number_of_entries_add_notify(proxy,
-                rme_service_wan_num_entries_changed, NULL);
-
-
         obj->_priv->timeout_id = g_timeout_add(CHECK_INTERVAL,
                 (GSourceFunc) rme_service_wan_check_timer_cb, obj);
         return obj;
@@ -112,13 +107,6 @@ class Rme:Service:WAN from Rme:Service
                     rme_service_wan_check_rule_cb, cb_data);
         }
         g_mutex_unlock(selfp->mutex);
-    }
-
-    public void num_entries_changed(GUPnPServiceProxy *proxy,
-            guint num_of_entries,
-            gpointer userdata)
-    {
-        log_error("Number of entries changed: %i", num_of_entries);
     }
 
     private const char *get_host_ip(self)
